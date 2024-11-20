@@ -1,4 +1,4 @@
-findClearBlock(STATE, CLEAR):-
+findClearBlocks(STATE, CLEAR):-
     findall(X, (
         member(M, STATE),
         length(M, 2),
@@ -45,19 +45,25 @@ move(TO_MOVE, PLACE_ON, STATE, STATE2):-
 notYetVisited(_, []).
 
 notYetVisited(STATE, [HPATH | TPATH]):-
-    not(permutation(STATE, HPATH)),
+    STATE \= HPATH,
     notYetVisited(STATE, TPATH).
 
-dfs(STATE, GOAL, _, []):-
-    permutation(GOAL, STATE).
+dfs(GOAL, GOAL, _, []).
 
 dfs(STATE, GOAL, PATH_SO_FAR, MOVES):-
-    findClearBlock(STATE, TO_MOVE_LIST),
+    findClearBlocks(STATE, TO_MOVE_LIST),
     append(TO_MOVE_LIST, ['table'], PLACE_ON_LIST),
     member(TO_MOVE, TO_MOVE_LIST),
     member(PLACE_ON, PLACE_ON_LIST),
     TO_MOVE \= PLACE_ON,
     move(TO_MOVE, PLACE_ON, STATE, STATE2),
-    notYetVisited(STATE2, [STATE | PATH_SO_FAR]),
-    dfs(STATE2, GOAL, [STATE | PATH_SO_FAR], TMOVES),
+    sort(STATE2, SSTATE2),
+    notYetVisited(SSTATE2, [STATE | PATH_SO_FAR]),
+    dfs(SSTATE2, GOAL, [STATE | PATH_SO_FAR], TMOVES),
     append([[on, TO_MOVE, PLACE_ON]], TMOVES, MOVES).
+
+
+moves(START, GOAL, MOVES):-
+    sort(START, SSTART),
+    sort(GOAL, SGOAL),
+    dfs(SSTART, SGOAL, [], MOVES).
