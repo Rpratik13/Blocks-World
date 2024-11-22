@@ -72,7 +72,7 @@ dfs(GOAL, GOAL, _, []).
 % Clause 2: Recursively search for goal state by choosing next move such that the block to
 % move is a clear block and the block to move on is also clear or the table, the two blocks
 % are not same and the move does not result in a state already seen.
-dfs(STATE, GOAL, PATH_SO_FAR, MOVES):-
+dfs(STATE, GOAL, PATH_SO_FAR, MOVES, STATES):-
     findClearBlocks(STATE, TO_MOVE_LIST),
     append(TO_MOVE_LIST, ['table'], PLACE_ON_LIST),
     member(TO_MOVE, TO_MOVE_LIST),
@@ -81,14 +81,15 @@ dfs(STATE, GOAL, PATH_SO_FAR, MOVES):-
     move(TO_MOVE, PLACE_ON, STATE, STATE2),
     sort(STATE2, SSTATE2),
     notYetVisited(SSTATE2, [STATE | PATH_SO_FAR]),
-    dfs(SSTATE2, GOAL, [STATE | PATH_SO_FAR], TMOVES),
-    append([[on, TO_MOVE, PLACE_ON]], TMOVES, MOVES).
+    dfs(SSTATE2, GOAL, [STATE | PATH_SO_FAR], TMOVES, TSTATES),
+    append([[on, TO_MOVE, PLACE_ON]], TMOVES, MOVES),
+    append([STATE], TSTATES, STATES).
 
 
 % getMoves/3
 % Clause 1: Holds true when MOVES holds the moves to be made in order to get from start state
 % to goal state.
-getMoves(START, GOAL, MOVES):-
+getMoves(START, GOAL, STATES, MOVES):-
     sort(START, SSTART),
     sort(GOAL, SGOAL),
-    dfs(SSTART, SGOAL, [], MOVES).
+    dfs(SSTART, SGOAL, [], MOVES, STATES).
