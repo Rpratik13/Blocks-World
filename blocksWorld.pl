@@ -1,3 +1,9 @@
+% start/1
+start([[clear, a], [on, a, table], [clear, d], [on, d, b], [on, b, table], [clear, c], [on, c, table]]).
+
+% goal/1
+goal([[clear, a], [on, a, b], [on, b, c], [on, c, d], [on, d, table]]).
+
 % findClearBlocks/2
 % Clause 1: Holds true when clear has all blocks that are clear in the state.
 findClearBlocks(STATE, CLEAR):-
@@ -67,7 +73,7 @@ notYetVisited(STATE, [HPATH | TPATH]):-
 
 % dfs/4
 % Clause 1: Returns empty move when current state is goal state.
-dfs(GOAL, GOAL, _, []).
+dfs(GOAL, GOAL, _, [], []).
 
 % Clause 2: Recursively search for goal state by choosing next move such that the block to
 % move is a clear block and the block to move on is also clear or the table, the two blocks
@@ -89,7 +95,9 @@ dfs(STATE, GOAL, PATH_SO_FAR, MOVES, STATES):-
 % getMoves/3
 % Clause 1: Holds true when MOVES holds the moves to be made in order to get from start state
 % to goal state.
-getMoves(START, GOAL, STATES, MOVES):-
+getMoves(STATES, MOVES):-
+    start(START),
     sort(START, SSTART),
+    goal(GOAL),
     sort(GOAL, SGOAL),
     dfs(SSTART, SGOAL, [], MOVES, STATES).
