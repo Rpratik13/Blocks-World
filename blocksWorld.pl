@@ -1,8 +1,8 @@
 % start/1
-start([[clear, a], [on, a, table], [clear, d], [on, d, b], [on, b, table], [clear, c], [on, c, table]]).
+start([[clear, a], [on, a, b], [on, b, table], [clear, c], [on, c, table]]).
 
 % goal/1
-goal([[clear, a], [on, a, b], [on, b, c], [on, c, d], [on, d, table]]).
+goal([[clear, a], [on, a, b], [on, b, c], [on, c, table]]).
 
 % findClearBlocks/2
 % Clause 1: Holds true when clear has all blocks that are clear in the state.

@@ -1,5 +1,5 @@
-initial_state = [['a' ], ['d', 'b'], ['c']]
-goal_state = [['a', 'b', 'c', 'd']]
+initial_state = [['b', 'a' ], ['c'], ['d']]
+goal_state = [['a', 'b'], ['d', 'c']]
 
 
 def parse(inp):
