@@ -1,8 +1,8 @@
 % start/1
-start([[clear, a], [on, a, b], [on, b, table], [clear, c], [on, c, table]]).
+start([[clear, a], [on, a, b], [on, b, table], [clear, c], [on, c, table], [clear, d], [on, d, table]]).
 
 % goal/1
-goal([[clear, a], [on, a, b], [on, b, c], [on, c, table]]).
+goal([[clear, d], [on, a, b], [on, b, c], [on, c, table], [on, d, a]]).
 
 % findClearBlocks/2
 % Clause 1: Holds true when clear has all blocks that are clear in the state.
@@ -73,12 +73,16 @@ notYetVisited(STATE, [HPATH | TPATH]):-
 
 % dfs/4
 % Clause 1: Returns empty move when current state is goal state.
-dfs(GOAL, GOAL, _, [], []).
+dfs(GOAL, GOAL, _, _, [], []).
+
+dfs(_, _, _, DEPTH_LIMIT, _, _):-
+  DEPTH_LIMIT < 0,
+  !, fail.
 
 % Clause 2: Recursively search for goal state by choosing next move such that the block to
 % move is a clear block and the block to move on is also clear or the table, the two blocks
 % are not same and the move does not result in a state already seen.
-dfs(STATE, GOAL, PATH_SO_FAR, MOVES, STATES):-
+dfs(STATE, GOAL, PATH_SO_FAR, DEPTH_LIMIT, MOVES, STATES):-
     findClearBlocks(STATE, TO_MOVE_LIST),
     append(TO_MOVE_LIST, ['table'], PLACE_ON_LIST),
     member(TO_MOVE, TO_MOVE_LIST),
@@ -87,10 +91,23 @@ dfs(STATE, GOAL, PATH_SO_FAR, MOVES, STATES):-
     move(TO_MOVE, PLACE_ON, STATE, STATE2),
     sort(STATE2, SSTATE2),
     notYetVisited(SSTATE2, [STATE | PATH_SO_FAR]),
-    dfs(SSTATE2, GOAL, [STATE | PATH_SO_FAR], TMOVES, TSTATES),
+    dfs(SSTATE2, GOAL, [STATE | PATH_SO_FAR], DEPTH_LIMI - 1, TMOVES, TSTATES),
     append([[on, TO_MOVE, PLACE_ON]], TMOVES, MOVES),
     append([STATE], TSTATES, STATES).
 
+
+countBlocks([], 0).
+
+countBlocks([HSTATE | TSTATE], COUNT):-
+    length(HSTATE, L),
+    L = 3,
+    countBlocks(TSTATE, TCOUNT),
+    COUNT is 1 + TCOUNT.
+
+countBlocks([HSTATE | TSTATE], COUNT):-
+  length(HSTATE, L),
+  L = 2,
+  countBlocks(TSTATE, COUNT).
 
 % getMoves/3
 % Clause 1: Holds true when MOVES holds the moves to be made in order to get from start state
@@ -100,4 +117,6 @@ getMoves(STATES, MOVES):-
     sort(START, SSTART),
     goal(GOAL),
     sort(GOAL, SGOAL),
-    dfs(SSTART, SGOAL, [], MOVES, STATES).
+    countBlocks(SSTART, COUNT),
+    DL is 2 * (COUNT - 1),
+    dfs(SSTART, SGOAL, [], DL, MOVES, STATES).
