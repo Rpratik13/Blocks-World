@@ -75,11 +75,12 @@ notYetVisited(STATE, [HPATH | TPATH]):-
 % Clause 1: Returns empty move when current state is goal state.
 dfs(GOAL, GOAL, _, _, [], []).
 
+% Clause 2: Fail if search goes beyond depth limit.
 dfs(_, _, _, DEPTH_LIMIT, _, _):-
   DEPTH_LIMIT < 0,
   !, fail.
 
-% Clause 2: Recursively search for goal state by choosing next move such that the block to
+% Clause 3: Recursively search for goal state by choosing next move such that the block to
 % move is a clear block and the block to move on is also clear or the table, the two blocks
 % are not same and the move does not result in a state already seen.
 dfs(STATE, GOAL, PATH_SO_FAR, DEPTH_LIMIT, MOVES, STATES):-
